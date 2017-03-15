@@ -3,15 +3,13 @@ package com.hrc.administrator.recyclerviewtest;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.*;
-import android.support.v7.widget.DividerItemDecoration;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -23,11 +21,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+        adapter=new HomeAdapter(this,mData);
         recyclerView= (RecyclerView) findViewById(R.id.id_recyclerview);
         //recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setLayoutManager(new GridLayoutManager(this,4));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(4,StaggeredGridLayoutManager.VERTICAL));
         recyclerView.addItemDecoration(new DividerGridItemDecoration(this));
-        recyclerView.setAdapter(adapter=new HomeAdapter());
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        initEvent();
+    }
+
+    private void initEvent() {
+        adapter.setOnItemClickListener(new HomeAdapter.onItemClickListener() {
+            @Override
+            public void onItemClickListener(View view, int position) {
+                Toast.makeText(MainActivity.this,position+" click",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onItemLongClickListener(View view, int position) {
+                Toast.makeText(MainActivity.this,position+" long click",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     protected void init(){
@@ -37,32 +52,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.MyViewHolder>{
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            MyViewHolder holder=new MyViewHolder(LayoutInflater.from(MainActivity.this).inflate(R.layout.item,parent,false));
-            return holder;
-        }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        @Override
-        public void onBindViewHolder(MyViewHolder holder, int position) {
-            int height=(new Random().nextInt(100))+100;
-            holder.tv.setText(mData.get(position));
-            holder.tv.setHeight(height);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_item_add:
+                adapter.addData(1);
+                break;
+            case R.id.menu_item_delete:
+                adapter.removeData(1);
+                break;
         }
-
-        @Override
-        public int getItemCount() {
-            return mData.size();
-        }
-
-        class MyViewHolder extends RecyclerView.ViewHolder{
-            TextView tv;
-
-            public MyViewHolder(View itemView) {
-                super(itemView);
-                tv= (TextView) itemView.findViewById(R.id.id_num);
-            }
-        }
+        return true;
     }
 }
