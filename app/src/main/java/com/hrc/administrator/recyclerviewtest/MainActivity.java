@@ -2,8 +2,8 @@ package com.hrc.administrator.recyclerviewtest;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.*;
+import android.support.v7.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -23,8 +24,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         init();
         recyclerView= (RecyclerView) findViewById(R.id.id_recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(MainActivity.this,DividerItemDecoration.VERTICAL_LIST));
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new GridLayoutManager(this,4));
+        recyclerView.addItemDecoration(new DividerGridItemDecoration(this));
         recyclerView.setAdapter(adapter=new HomeAdapter());
     }
 
@@ -44,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, int position) {
+            int height=(new Random().nextInt(100))+100;
             holder.tv.setText(mData.get(position));
+            holder.tv.setHeight(height);
         }
 
         @Override
